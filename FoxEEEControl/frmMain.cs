@@ -30,6 +30,7 @@ namespace FoxEEEControl
         private SQLiteConnection sqlite_conn;
         private SQLiteCommand sqlite_cmd;
         private SQLiteDataReader sqlite_reader;
+        private object SQLiteLock = new object();
 
         public frmMain()
         {
@@ -42,13 +43,12 @@ namespace FoxEEEControl
             oldCapsLock = (((ushort)GetKeyState(0x14 /*VK_CAPITAL*/)) & 0xffff) != 0;
             //oldNumLock = (((ushort)GetKeyState(0x90 /*VK_NUMLOCK*/)) & 0xffff) != 0;
             //Application.Idle += new EventHandler(Application_Idle);
-
-            sqlite_conn = new SQLiteConnection("data source=\"Program.db\"");
-            sqlite_cmd = new SQLiteCommand(sqlite_conn);
-
-            lock (sqlite_conn)
+            lock (SQLiteLock)
             {
+                sqlite_conn = new SQLiteConnection("data source=\"Program.db\"");
+                sqlite_cmd = new SQLiteCommand(sqlite_conn);
                 sqlite_conn.Open();
+
                 sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS programs(name TEXT PRIMARY KEY, path TEXT, count INT)";
                 sqlite_cmd.ExecuteNonQuery();
             }
@@ -126,9 +126,10 @@ namespace FoxEEEControl
                         this.Hide();
                         break;
                     case Keys.Enter:
-                        this.Hide();
-                        lock (sqlite_conn)
+                        if (SearchThread != null && SearchThread.IsAlive) break;
+                        lock (SQLiteLock)
                         {
+                            this.Hide();
                             if (lbResults.Items.Count < 1 || lbResults.SelectedIndex < 0)
                             {
                                 TryStart(tbEntry.Text);
@@ -190,7 +191,7 @@ namespace FoxEEEControl
                 px.StartInfo = new ProcessStartInfo(txt, arg);
                 px.Start();
             }
-            catch { }
+            catch { this.DoShow(); }
         }
         private void tbEntry_SetText()
         {
@@ -213,54 +214,54 @@ namespace FoxEEEControl
 
         private void SearchStuff()
         {
-            string item = "";
-            string txt = tbEntry.Text;
-            lbResults.Invoke(new MethodInvoker(delegate()
+            lock (SQLiteLock)
             {
-                item = (string)lbResults.SelectedItem;
-            }));
-            int selItem = 0;
-            lbResults.Invoke(new MethodInvoker(lbResults.Items.Clear));
-            if (txt == "") return;
-            try
-            {
-                NCalc.Expression exp = new NCalc.Expression(tbEntry.Text);
-                lbResults.Invoke(lbResultAddItem, exp.Evaluate() + " = " + exp.ParsedExpression.ToString());
-            }
-            catch { }
-            if (txt.Length >= 3 && txt[1] == ':' && (txt[2] == '\\' || txt[2] == '/'))
-            {
+                string item = "";
+                string txt = tbEntry.Text;
+                lbResults.Invoke(new MethodInvoker(delegate()
+                {
+                    item = (string)lbResults.SelectedItem;
+                }));
+                int selItem = 0;
+                lbResults.Invoke(new MethodInvoker(lbResults.Items.Clear));
+                if (txt == "") return;
                 try
                 {
-                    char c = txt[txt.Length - 1];
-                    string patt = "*";
-                    if (c != '/' && c != '\\')
-                    {
-                        int x = txt.LastIndexOfAny(pathSep) + 1;
-                        patt = txt.Substring(x) + "*";
-                        txt = txt.Remove(x);
-                    }
-                    else
-                    {
-                        lbResults.Invoke(lbResultAddItem, txt);
-                    }
-                    foreach (string s in Directory.GetFileSystemEntries(txt,patt))
-                    {
-                        lbResults.Invoke(lbResultAddItem, s);
-                    }
+                    NCalc.Expression exp = new NCalc.Expression(tbEntry.Text);
+                    lbResults.Invoke(lbResultAddItem, exp.Evaluate() + " = " + exp.ParsedExpression.ToString());
                 }
                 catch { }
-            }
-            else
-            {
-                lock (sqlite_conn)
+                if (txt.Length >= 3 && txt[1] == ':' && (txt[2] == '\\' || txt[2] == '/'))
                 {
                     try
                     {
-                            sqlite_reader.Close();
-                            sqlite_reader.Dispose();
+                        char c = txt[txt.Length - 1];
+                        string patt = "*";
+                        if (c != '/' && c != '\\')
+                        {
+                            int x = txt.LastIndexOfAny(pathSep) + 1;
+                            patt = txt.Substring(x) + "*";
+                            txt = txt.Remove(x);
+                        }
+                        else
+                        {
+                            lbResults.Invoke(lbResultAddItem, txt);
+                        }
+                        foreach (string s in Directory.GetFileSystemEntries(txt, patt))
+                        {
+                            lbResults.Invoke(lbResultAddItem, s);
+                        }
                     }
-                    catch(Exception) { }
+                    catch { }
+                }
+                else
+                {
+                    try
+                    {
+                        sqlite_reader.Close();
+                        sqlite_reader.Dispose();
+                    }
+                    catch (Exception) { }
 
                     availableStuff.Clear();
                     sqlite_cmd.CommandText = "SELECT name, path, count FROM programs WHERE name LIKE \"%" + SecurityElement.Escape(tbEntry.Text) + "%\" ORDER BY count DESC, name ASC";
@@ -287,13 +288,13 @@ namespace FoxEEEControl
                     sqlite_reader.Dispose();
                     sqlc.Dispose();
                 }
-            }
-            if (lbResults.Items.Count > 0)
-            {
-                lbResults.Invoke(new MethodInvoker(delegate()
+                if (lbResults.Items.Count > 0)
                 {
-                    lbResults.SelectedIndex = selItem;
-                }));
+                    lbResults.Invoke(new MethodInvoker(delegate()
+                    {
+                        lbResults.SelectedIndex = selItem;
+                    }));
+                }
             }
         }
 
@@ -337,7 +338,7 @@ namespace FoxEEEControl
         private void __PopulateMenu(object forceRescanO)
         {
             bool forceRescan = (bool)forceRescanO;
-            lock (sqlite_conn)
+            lock (SQLiteLock)
             {
                 if (forceRescan)
                 {

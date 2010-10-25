@@ -263,7 +263,7 @@ namespace FoxEEEControl
                     catch(Exception) { }
 
                     availableStuff.Clear();
-                    sqlite_cmd.CommandText = "SELECT name, path, count FROM programs WHERE name LIKE \"%" + SecurityElement.Escape(tbEntry.Text) + "%\" ORDER BY count DESC";
+                    sqlite_cmd.CommandText = "SELECT name, path, count FROM programs WHERE name LIKE \"%" + SecurityElement.Escape(tbEntry.Text) + "%\" ORDER BY count DESC, ORDER BY name ASC";
                     sqlite_reader = sqlite_cmd.ExecuteReader();
                     int namec = sqlite_reader.GetOrdinal("name");
                     int pathc = sqlite_reader.GetOrdinal("path");

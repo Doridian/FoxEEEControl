@@ -29,6 +29,7 @@ namespace FoxEEEControl
 
         private SQLiteConnection sqlite_conn;
         private SQLiteCommand sqlite_cmd;
+        private SQLiteDataReader sqlite_reader;
 
         public frmMain()
         {
@@ -45,7 +46,7 @@ namespace FoxEEEControl
             sqlite_conn = new SQLiteConnection("data source=\"Program.db\"");
             sqlite_cmd = new SQLiteCommand(sqlite_conn);
 
-            lock (availableStuff)
+            lock (sqlite_conn)
             {
                 sqlite_conn.Open();
                 sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS programs(name TEXT PRIMARY KEY, path TEXT, count INT)";
@@ -125,7 +126,8 @@ namespace FoxEEEControl
                         this.Hide();
                         break;
                     case Keys.Enter:
-                        lock (availableStuff)
+                        this.Hide();
+                        lock (sqlite_conn)
                         {
                             if (lbResults.Items.Count < 1 || lbResults.SelectedIndex < 0)
                             {
@@ -141,7 +143,6 @@ namespace FoxEEEControl
                             Process p = new Process();
                             p.StartInfo = new ProcessStartInfo(availableStuff[item], "");
                             p.Start();
-                            this.Hide();
                         }
                         break;
                     case Keys.Down:
@@ -212,60 +213,67 @@ namespace FoxEEEControl
 
         private void SearchStuff()
         {
-            lock (availableStuff)
+            string item = "";
+            string txt = tbEntry.Text;
+            lbResults.Invoke(new MethodInvoker(delegate()
             {
-                string item = "";
-                string txt = tbEntry.Text;
-                lbResults.Invoke(new MethodInvoker(delegate()
-                {
-                    item = (string)lbResults.SelectedItem;
-                }));
-                int selItem = 0;
-                lbResults.Invoke(new MethodInvoker(lbResults.Items.Clear));
-                if (txt == "") return;
+                item = (string)lbResults.SelectedItem;
+            }));
+            int selItem = 0;
+            lbResults.Invoke(new MethodInvoker(lbResults.Items.Clear));
+            if (txt == "") return;
+            try
+            {
+                NCalc.Expression exp = new NCalc.Expression(tbEntry.Text);
+                lbResults.Invoke(lbResultAddItem, exp.Evaluate() + " = " + exp.ParsedExpression.ToString());
+            }
+            catch { }
+            if (txt.Length >= 3 && txt[1] == ':' && (txt[2] == '\\' || txt[2] == '/'))
+            {
                 try
                 {
-                    NCalc.Expression exp = new NCalc.Expression(tbEntry.Text);
-                    lbResults.Invoke(lbResultAddItem, exp.Evaluate() + " = " + exp.ParsedExpression.ToString());
+                    char c = txt[txt.Length - 1];
+                    string patt = "*";
+                    if (c != '/' && c != '\\')
+                    {
+                        int x = txt.LastIndexOfAny(pathSep) + 1;
+                        patt = txt.Substring(x) + "*";
+                        txt = txt.Remove(x);
+                    }
+                    else
+                    {
+                        lbResults.Invoke(lbResultAddItem, txt);
+                    }
+                    foreach (string s in Directory.GetFileSystemEntries(txt,patt))
+                    {
+                        lbResults.Invoke(lbResultAddItem, s);
+                    }
                 }
                 catch { }
-                if (txt.Length >= 3 && txt[1] == ':' && (txt[2] == '\\' || txt[2] == '/'))
+            }
+            else
+            {
+                lock (sqlite_conn)
                 {
                     try
                     {
-                        char c = txt[txt.Length - 1];
-                        string patt = "*";
-                        if (c != '/' && c != '\\')
-                        {
-                            int x = txt.LastIndexOfAny(pathSep) + 1;
-                            patt = txt.Substring(x) + "*";
-                            txt = txt.Remove(x);
-                        }
-                        else
-                        {
-                            lbResults.Invoke(lbResultAddItem, txt);
-                        }
-                        foreach (string s in Directory.GetFileSystemEntries(txt,patt))
-                        {
-                            lbResults.Invoke(lbResultAddItem, s);
-                        }
+                            sqlite_reader.Close();
+                            sqlite_reader.Dispose();
                     }
-                    catch { }
-                }
-                else
-                {
+                    catch(Exception) { }
+
                     availableStuff.Clear();
                     sqlite_cmd.CommandText = "SELECT name, path, count FROM programs WHERE name LIKE \"%" + SecurityElement.Escape(tbEntry.Text) + "%\" ORDER BY count DESC";
-                    SQLiteDataReader read = sqlite_cmd.ExecuteReader();
-                    int namec = read.GetOrdinal("name");
-                    int pathc = read.GetOrdinal("path");
-                    int countc = read.GetOrdinal("count");
+                    sqlite_reader = sqlite_cmd.ExecuteReader();
+                    int namec = sqlite_reader.GetOrdinal("name");
+                    int pathc = sqlite_reader.GetOrdinal("path");
+                    int countc = sqlite_reader.GetOrdinal("count");
                     string tmp; string tmp2;
                     SQLiteCommand sqlc = new SQLiteCommand(sqlite_conn);
-                    while (read.Read())
+                    while (sqlite_reader.Read())
                     {
-                        tmp = read.GetString(pathc);
-                        tmp2 = read.GetString(namec);
+                        tmp = sqlite_reader.GetString(pathc);
+                        tmp2 = sqlite_reader.GetString(namec);
                         if (!File.Exists(tmp))
                         {
                             sqlc.CommandText = "DELETE FROM programs WHERE name = \"" + SecurityElement.Escape(tmp2) + "\"";
@@ -275,17 +283,17 @@ namespace FoxEEEControl
                         lbResults.Invoke(lbResultAddItem, tmp2);
                         availableStuff.Add(tmp2, tmp);
                     }
-                    read.Close();
-                    read.Dispose();
+                    sqlite_reader.Close();
+                    sqlite_reader.Dispose();
                     sqlc.Dispose();
                 }
-                if (lbResults.Items.Count > 0)
+            }
+            if (lbResults.Items.Count > 0)
+            {
+                lbResults.Invoke(new MethodInvoker(delegate()
                 {
-                    lbResults.Invoke(new MethodInvoker(delegate()
-                    {
-                        lbResults.SelectedIndex = selItem;
-                    }));
-                }
+                    lbResults.SelectedIndex = selItem;
+                }));
             }
         }
 
@@ -329,7 +337,7 @@ namespace FoxEEEControl
         private void __PopulateMenu(object forceRescanO)
         {
             bool forceRescan = (bool)forceRescanO;
-            lock (availableStuff)
+            lock (sqlite_conn)
             {
                 if (forceRescan)
                 {

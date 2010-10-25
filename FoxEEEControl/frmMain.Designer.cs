@@ -38,6 +38,7 @@
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmLockCheck = new System.Windows.Forms.Timer(this.components);
             this.notifyIconMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -113,6 +114,11 @@
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // tmLockCheck
+            // 
+            this.tmLockCheck.Enabled = true;
+            this.tmLockCheck.Tick += new System.EventHandler(this.Application_Idle);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -145,6 +151,7 @@
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.Timer tmLockCheck;
     }
 }
 

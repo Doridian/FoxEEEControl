@@ -128,6 +128,7 @@
             this.Controls.Add(this.lbResults);
             this.Controls.Add(this.tbEntry);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "FoxEEEControl";

@@ -40,7 +40,7 @@ namespace FoxEEEControl
             hk.OwnerForm = this;
             hk.HotKeyPressed += new HotKey.HotKeyPressedEventHandler(hk_HotKeyPressed);
             hk.AddHotKey(Keys.Space, HotKey.MODKEY.MOD_CONTROL, "FoxEEEControl_ShowForm");
-            oldCapsLock = (((ushort)GetKeyState(0x14 /*VK_CAPITAL*/)) & 0xffff) != 0;
+            //oldCapsLock = (((ushort)GetKeyState(0x14 /*VK_CAPITAL*/)) & 0xffff) != 0;
             //oldNumLock = (((ushort)GetKeyState(0x90 /*VK_NUMLOCK*/)) & 0xffff) != 0;
             //Application.Idle += new EventHandler(Application_Idle);
             lock (SQLiteLock)
@@ -59,15 +59,15 @@ namespace FoxEEEControl
             sqlite_conn.Close();
         }
 
-        [DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true, CallingConvention=CallingConvention.Winapi)]
-        public static extern short GetKeyState(int keyCode);
+        //[DllImport("user32.dll", CharSet=CharSet.Auto, ExactSpelling=true, CallingConvention=CallingConvention.Winapi)]
+        //public static extern short GetKeyState(int keyCode);
 
-        bool oldCapsLock;
+        //bool oldCapsLock;
         //bool oldNumLock;
-        private void Application_Idle(object sender, EventArgs e)
+        /*private void Application_Idle(object sender, EventArgs e)
         {
-            bool CapsLock = (((ushort)GetKeyState(0x14 /*VK_CAPITAL*/)) & 0xffff) != 0;
-            //bool NumLock = (((ushort)GetKeyState(0x90 /*VK_NUMLOCK*/)) & 0xffff) != 0;
+            bool CapsLock = (((ushort)GetKeyState(0x14 /*VK_CAPITAL*)) & 0xffff) != 0;
+            //bool NumLock = (((ushort)GetKeyState(0x90 /*VK_NUMLOCK*)) & 0xffff) != 0;
             if (CapsLock != oldCapsLock)
             {
                 notifyIcon.BalloonTipText = "CapsLock is now " + ((CapsLock) ? "ON" : "OFF");
@@ -79,8 +79,8 @@ namespace FoxEEEControl
                 notifyIcon.BalloonTipText = "NumLock is now " + ((NumLock) ? "on" : "off");
                 notifyIcon.ShowBalloonTip(1000);
                 oldNumLock = NumLock;
-            }*/
-        }
+            }*
+        }*/
 
         private void hk_HotKeyPressed(string HotKeyID)
         {

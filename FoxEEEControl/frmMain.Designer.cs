@@ -64,7 +64,6 @@
             this.lbResults.Name = "lbResults";
             this.lbResults.Size = new System.Drawing.Size(256, 360);
             this.lbResults.TabIndex = 1;
-            this.lbResults.SelectedIndexChanged += new System.EventHandler(this.lbResults_SelectedIndexChanged);
             // 
             // notifyIcon
             // 

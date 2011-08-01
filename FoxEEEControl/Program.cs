@@ -19,7 +19,10 @@ namespace FoxEEEControl
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmMain());
+            mainForm = new frmMain();
+            Application.Run(mainForm);
         }
+
+        public static frmMain mainForm;
     }
 }

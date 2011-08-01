@@ -88,7 +88,7 @@ namespace FoxEEEControl.Handlers.Classes
                         sqlite_cmd.ExecuteNonQuery();
                         continue;
                     }
-                    ret.Add(new HandlerItem(tmp2,this));
+                    ret.Add(new HandlerItem(tmp2, this));
                     availableStuff.Add(tmp2, tmp);
                 }
                 sqlite_reader.Close();
@@ -97,16 +97,16 @@ namespace FoxEEEControl.Handlers.Classes
             return ret.ToArray();
         }
 
-        public void Start(HandlerItem item)
+        public void Start(string item)
         {
             lock (SQLiteHandler.lockObject)
             {
                 SQLiteCommand sqlite_cmd = SQLiteHandler.GetCommand();
-                sqlite_cmd.CommandText = "UPDATE programs SET count = count + 1 WHERE name = \"" + SecurityElement.Escape(item.text) + "\"";
+                sqlite_cmd.CommandText = "UPDATE programs SET count = count + 1 WHERE name = \"" + SecurityElement.Escape(item) + "\"";
                 sqlite_cmd.ExecuteNonQuery();
 
                 Process p = new Process();
-                p.StartInfo = new ProcessStartInfo(availableStuff[item.text], "");
+                p.StartInfo = new ProcessStartInfo(availableStuff[item], "");
                 p.Start();
             }
         }

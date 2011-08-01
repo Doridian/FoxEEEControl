@@ -21,6 +21,6 @@ namespace FoxEEEControl.Handlers.Classes
             return ret.ToArray();
         }
 
-        public void Start(HandlerItem item) { }
+        public void Start(string item) { }
     }
 }

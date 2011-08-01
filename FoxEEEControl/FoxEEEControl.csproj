@@ -78,6 +78,7 @@
     <Compile Include="Handlers\Classes\NCalcHandler.cs" />
     <Compile Include="Handlers\HandlerItem.cs" />
     <Compile Include="Handlers\Classes\StartMenuHandler.cs" />
+    <Compile Include="Handlers\Types\PrefixHandler.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

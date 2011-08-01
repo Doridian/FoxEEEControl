@@ -9,7 +9,7 @@ using FoxEEEControl.Handlers.Classes;
 
 namespace FoxEEEControl.Handlers
 {
-    class MasterHandler : IHandler
+    class MasterHandler
     {
         private List<IHandler> handlers = new List<IHandler>();
         private Thread RefreshThread;
@@ -66,7 +66,7 @@ namespace FoxEEEControl.Handlers
         {
             try
             {
-                item.handler.Start(item);
+                item.handler.Start(item.text);
             }
             catch (HandlerUseShellExecException)
             {

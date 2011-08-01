@@ -10,6 +10,6 @@ namespace FoxEEEControl.Handlers
     {
         void Initialize(bool forceFully);
         HandlerItem[] GetResultsFor(string search);
-        void Start(HandlerItem item);
+        void Start(string item);
     }
 }

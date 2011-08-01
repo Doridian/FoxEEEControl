@@ -8,7 +8,7 @@ namespace FoxEEEControl.Handlers
 {
     interface IHandler
     {
-        void Initialize(bool forceFully);
+        void Initialize(object param); //true = force, false = noforce < atm
         HandlerItem[] GetResultsFor(string search);
         void Start(string item);
     }

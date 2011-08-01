@@ -7,7 +7,7 @@ namespace FoxEEEControl.Handlers.Types
 {
     abstract class PrefixHandler : IHandler
     {
-        public abstract void Initialize(bool forceFully);
+        public abstract void Initialize(object param);
         public abstract string PREFIX { get; }
         protected abstract HandlerItem[] PrefixGetResultsFor(string search);
         protected abstract void PrefixStart(string item);

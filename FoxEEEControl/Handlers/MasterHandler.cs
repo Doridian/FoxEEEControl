@@ -14,7 +14,7 @@ namespace FoxEEEControl.Handlers
         private List<IHandler> handlers = new List<IHandler>();
         private Thread RefreshThread;
 
-        public void Initialize(bool forceFully)
+        public void Initialize(object param)
         {
             try
             {
@@ -23,13 +23,11 @@ namespace FoxEEEControl.Handlers
             catch { }
 
             RefreshThread = new Thread(new ParameterizedThreadStart(__Initialize));
-            RefreshThread.Start(forceFully);
+            RefreshThread.Start(param);
         }
 
-        private void __Initialize(object forceFullyO)
+        private void __Initialize(object param)
         {
-            bool forceFully = (bool)forceFullyO;
-
             Program.mainForm.Invoke(new MethodInvoker(Program.mainForm.StartRefresh));
 
             handlers.Clear();
@@ -38,27 +36,40 @@ namespace FoxEEEControl.Handlers
             handlers.Add(new NCalcHandler());
             handlers.Add(new DirectoryBrowserHandler());
 
+            ThreadGroup initializerGroup = new ThreadGroup();
+
             foreach (IHandler handler in handlers)
             {
                 try
                 {
-                    handler.Initialize(forceFully);
+                    initializerGroup.AddAndRun(handler.Initialize, param);
                 }
                 catch { }
             }
+
+            initializerGroup.WaitForCompletion();
+
             Program.mainForm.Invoke(new MethodInvoker(Program.mainForm.EndRefresh));
         }
 
         public HandlerItem[] GetResultsFor(string search)
         {
+            ThreadGroup searchGroup = new ThreadGroup();
             List<HandlerItem> ret = new List<HandlerItem>();
-            HandlerItem[] tmp;
-            foreach (IHandler handler in handlers)
+            foreach (IHandler handlerx in handlers)
             {
-                tmp = handler.GetResultsFor(search);
-                if (tmp == null) continue;
-                ret.AddRange(tmp);
+                IHandler handler = handlerx;
+                searchGroup.AddAndRun(delegate()
+                {
+                    HandlerItem[]  tmp = handler.GetResultsFor(search);
+                    if (tmp == null) return;
+                    lock (ret)
+                    {
+                        ret.AddRange(tmp);
+                    }
+                });
             }
+            searchGroup.WaitForCompletion();
             return ret.ToArray();
         }
 

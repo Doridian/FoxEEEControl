@@ -16,7 +16,7 @@ namespace FoxEEEControl.Handlers.Classes
         private readonly char[] pathSep = { '/', '\\' };
         private Dictionary<string, string> availableStuff = new Dictionary<string, string>();
 
-        public void Initialize(bool forceFully)
+        public void Initialize(object param)
         {
             SQLiteCommand sqlite_cmd = SQLiteHandler.GetCommand();
             lock (SQLiteHandler.lockObject)
@@ -24,7 +24,7 @@ namespace FoxEEEControl.Handlers.Classes
                 sqlite_cmd.CommandText = "CREATE TABLE IF NOT EXISTS programs(name TEXT PRIMARY KEY, path TEXT, count INT)";
                 sqlite_cmd.ExecuteNonQuery();
 
-                if (forceFully)
+                if ((bool)param)
                 {
                     List<string> files = new List<string>();
                     __SearchRec(files, Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "*.lnk");

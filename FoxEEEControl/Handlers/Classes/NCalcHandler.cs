@@ -7,7 +7,7 @@ namespace FoxEEEControl.Handlers.Classes
 {
     class NCalcHandler : IHandler
     {
-        public void Initialize(bool forceFully) { }
+        public void Initialize(object param) { }
 
         public HandlerItem[] GetResultsFor(string search)
         {

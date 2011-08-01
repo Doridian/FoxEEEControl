@@ -10,7 +10,7 @@ namespace FoxEEEControl.Handlers.Classes
     {
         private readonly char[] pathSep = { '/', '\\' };
 
-        public void Initialize(bool forceFully) { }
+        public void Initialize(object param) { }
 
         public HandlerItem[] GetResultsFor(string search)
         {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace FoxEEEControl.Handlers
+namespace FoxEEEControl.Handlers.Classes
 {
     class DirectoryBrowserHandler : IHandler
     {

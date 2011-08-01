@@ -9,7 +9,7 @@ using System.IO;
 using System.Security;
 using System.Diagnostics;
 
-namespace FoxEEEControl.Handlers
+namespace FoxEEEControl.Handlers.Classes
 {
     class StartMenuHandler : IHandler
     {

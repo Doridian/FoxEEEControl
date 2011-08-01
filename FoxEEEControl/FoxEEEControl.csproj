@@ -71,13 +71,13 @@
     <Compile Include="frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
-    <Compile Include="Handlers\DirectoryBrowserHandler.cs" />
+    <Compile Include="Handlers\Classes\DirectoryBrowserHandler.cs" />
     <Compile Include="Handlers\HandlerUseShellExecException.cs" />
     <Compile Include="Handlers\IHandler.cs" />
     <Compile Include="Handlers\MasterHandler.cs" />
-    <Compile Include="Handlers\NCalcHandler.cs" />
+    <Compile Include="Handlers\Classes\NCalcHandler.cs" />
     <Compile Include="Handlers\HandlerItem.cs" />
-    <Compile Include="Handlers\StartMenuHandler.cs" />
+    <Compile Include="Handlers\Classes\StartMenuHandler.cs" />
     <Compile Include="HotKey.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace FoxEEEControl.Handlers
+namespace FoxEEEControl.Handlers.Classes
 {
     class NCalcHandler : IHandler
     {

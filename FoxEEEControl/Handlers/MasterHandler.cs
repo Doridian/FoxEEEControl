@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
+using FoxEEEControl.Handlers.Classes;
 
 namespace FoxEEEControl.Handlers
 {

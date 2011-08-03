@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
+using System.Windows.Forms;
 using FoxEEEControl.Handlers.Classes;
+using FoxEEEControl.Handlers.Types;
 
 namespace FoxEEEControl.Handlers
 {
     class MasterHandler
     {
-        private List<IHandler> handlers = new List<IHandler>();
+        private List<GenericHandler> handlers = new List<GenericHandler>();
         private Thread RefreshThread;
 
         public void Initialize(object param)
@@ -35,10 +33,11 @@ namespace FoxEEEControl.Handlers
             handlers.Add(new StartMenuHandler());
             handlers.Add(new NCalcHandler());
             handlers.Add(new DirectoryBrowserHandler());
+            handlers.Add(new GoogleHandler());
 
             ThreadGroup initializerGroup = new ThreadGroup();
 
-            foreach (IHandler handler in handlers)
+            foreach (GenericHandler handler in handlers)
             {
                 try
                 {
@@ -56,9 +55,9 @@ namespace FoxEEEControl.Handlers
         {
             ThreadGroup searchGroup = new ThreadGroup();
             List<HandlerItem> ret = new List<HandlerItem>();
-            foreach (IHandler handlerx in handlers)
+            foreach (GenericHandler handlerx in handlers)
             {
-                IHandler handler = handlerx;
+                GenericHandler handler = handlerx;
                 searchGroup.AddAndRun(delegate()
                 {
                     HandlerItem[]  tmp = handler.GetResultsFor(search);
@@ -79,9 +78,10 @@ namespace FoxEEEControl.Handlers
             {
                 item.handler.Start(item.text);
             }
-            catch (HandlerUseShellExecException)
+            catch (HandlerUseShellExecException e)
             {
-                TryStart(item.text);
+                if (string.IsNullOrEmpty(e.runwhat)) TryStart(item.text);
+                else TryStart(e.runwhat);
             }
             catch
             {

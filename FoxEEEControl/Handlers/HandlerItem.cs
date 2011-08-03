@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using FoxEEEControl.Handlers.Types;
 
 namespace FoxEEEControl.Handlers
 {
     class HandlerItem
     {
-        public HandlerItem(string txt, IHandler handl)
+        public HandlerItem(string txt, GenericHandler handl)
         {
             text = txt;
             handler = handl;
         }
 
         public string text;
-        public IHandler handler;
+        public GenericHandler handler;
 
         public override string ToString()
         {

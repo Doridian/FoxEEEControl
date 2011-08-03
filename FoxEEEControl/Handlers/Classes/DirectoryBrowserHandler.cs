@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.IO;
+using FoxEEEControl.Handlers.Types;
 
 namespace FoxEEEControl.Handlers.Classes
 {
-    class DirectoryBrowserHandler : IHandler
+    class DirectoryBrowserHandler : GenericHandler
     {
         private readonly char[] pathSep = { '/', '\\' };
 
-        public void Initialize(object param) { }
-
-        public HandlerItem[] GetResultsFor(string search)
+        public override HandlerItem[] GetResultsFor(string search)
         {
             if (search.Length < 3 || search[1] != ':' || (search[2] != '\\' && search[2] != '/')) return null;
             List<HandlerItem> ret = new List<HandlerItem>();
@@ -39,9 +35,6 @@ namespace FoxEEEControl.Handlers.Classes
             return ret.ToArray();
         }
 
-        public void Start(string item)
-        {
-            throw new HandlerUseShellExecException();
-        }
+        
     }
 }

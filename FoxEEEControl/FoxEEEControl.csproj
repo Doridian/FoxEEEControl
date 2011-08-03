@@ -72,8 +72,9 @@
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
     <Compile Include="Handlers\Classes\DirectoryBrowserHandler.cs" />
+    <Compile Include="Handlers\Classes\GoogleHandler.cs" />
     <Compile Include="Handlers\HandlerUseShellExecException.cs" />
-    <Compile Include="Handlers\IHandler.cs" />
+    <Compile Include="Handlers\Types\GenericHandler.cs" />
     <Compile Include="Handlers\MasterHandler.cs" />
     <Compile Include="Handlers\Classes\NCalcHandler.cs" />
     <Compile Include="Handlers\HandlerItem.cs" />

@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Windows.Forms;
-using System.Diagnostics;
 using System.Threading;
-using System.Runtime.InteropServices;
-using System.Data.SQLite;
-using System.Security;
+using System.Windows.Forms;
 using FoxEEEControl.Handlers;
 
 namespace FoxEEEControl
@@ -121,7 +115,9 @@ namespace FoxEEEControl
         private void tbEntry_SetText()
         {
             textChangedAuto = true;
-            tbEntry.Text = lbResults.SelectedItem.ToString();
+            HandlerItem item = (HandlerItem)lbResults.SelectedItem;
+            string text = item.handler.GetTextForItem(item.text);
+            if(!string.IsNullOrEmpty(text)) tbEntry.Text = text;
             textChangedAuto = false;
             tbEntry.Select(tbEntry.Text.Length, 0);
         }

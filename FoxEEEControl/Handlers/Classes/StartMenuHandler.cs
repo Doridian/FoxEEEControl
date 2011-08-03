@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Security;
-using System.Diagnostics;
+using FoxEEEControl.Handlers.Types;
 
 namespace FoxEEEControl.Handlers.Classes
 {
-    class StartMenuHandler : IHandler
+    class StartMenuHandler : GenericHandler
     {
         private readonly char[] pathSep = { '/', '\\' };
         private Dictionary<string, string> availableStuff = new Dictionary<string, string>();
 
-        public void Initialize(object param)
+        public override void Initialize(object param)
         {
             SQLiteCommand sqlite_cmd = SQLiteHandler.GetCommand();
             lock (SQLiteHandler.lockObject)
@@ -63,7 +60,7 @@ namespace FoxEEEControl.Handlers.Classes
             catch (UnauthorizedAccessException) { }
         }
 
-        public HandlerItem[] GetResultsFor(string search)
+        public override HandlerItem[] GetResultsFor(string search)
         {
             List<HandlerItem> ret = new List<HandlerItem>();
 
@@ -97,7 +94,7 @@ namespace FoxEEEControl.Handlers.Classes
             return ret.ToArray();
         }
 
-        public void Start(string item)
+        public override void Start(string item)
         {
             lock (SQLiteHandler.lockObject)
             {

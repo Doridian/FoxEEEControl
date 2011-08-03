@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using FoxEEEControl.Handlers.Types;
 
 namespace FoxEEEControl.Handlers.Classes
 {
-    class NCalcHandler : IHandler
+    class NCalcHandler : GenericHandler
     {
-        public void Initialize(object param) { }
-
-        public HandlerItem[] GetResultsFor(string search)
+        public override HandlerItem[] GetResultsFor(string search)
         {
             List<HandlerItem> ret = new List<HandlerItem>();
             try
@@ -21,6 +17,6 @@ namespace FoxEEEControl.Handlers.Classes
             return ret.ToArray();
         }
 
-        public void Start(string item) { }
+        public override void Start(string item) { }
     }
 }

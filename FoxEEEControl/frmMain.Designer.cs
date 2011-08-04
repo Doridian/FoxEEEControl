@@ -38,6 +38,8 @@
             this.refreshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbDisplay = new System.Windows.Forms.RichTextBox();
+            this.tmRefresh = new System.Windows.Forms.Timer(this.components);
             this.notifyIconMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -45,7 +47,7 @@
             // 
             this.tbEntry.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbEntry.Location = new System.Drawing.Point(12, 12);
+            this.tbEntry.Location = new System.Drawing.Point(12, 38);
             this.tbEntry.Name = "tbEntry";
             this.tbEntry.Size = new System.Drawing.Size(256, 20);
             this.tbEntry.TabIndex = 0;
@@ -64,6 +66,8 @@
             this.lbResults.Name = "lbResults";
             this.lbResults.Size = new System.Drawing.Size(256, 360);
             this.lbResults.TabIndex = 1;
+            this.lbResults.TabStop = false;
+            this.lbResults.UseTabStops = false;
             // 
             // notifyIcon
             // 
@@ -112,12 +116,33 @@
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
+            // tbDisplay
+            // 
+            this.tbDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tbDisplay.DetectUrls = false;
+            this.tbDisplay.Location = new System.Drawing.Point(12, 12);
+            this.tbDisplay.Multiline = false;
+            this.tbDisplay.Name = "tbDisplay";
+            this.tbDisplay.ReadOnly = true;
+            this.tbDisplay.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
+            this.tbDisplay.Size = new System.Drawing.Size(256, 20);
+            this.tbDisplay.TabIndex = 2;
+            this.tbDisplay.TabStop = false;
+            this.tbDisplay.Text = "";
+            // 
+            // tmRefresh
+            // 
+            this.tmRefresh.Enabled = true;
+            this.tmRefresh.Interval = 10;
+            this.tmRefresh.Tick += new System.EventHandler(this.tmRefresh_Tick);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 410);
             this.ControlBox = false;
+            this.Controls.Add(this.tbDisplay);
             this.Controls.Add(this.lbResults);
             this.Controls.Add(this.tbEntry);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -145,6 +170,8 @@
         private System.Windows.Forms.ToolStripMenuItem refreshToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
+        private System.Windows.Forms.RichTextBox tbDisplay;
+        private System.Windows.Forms.Timer tmRefresh;
     }
 }
 

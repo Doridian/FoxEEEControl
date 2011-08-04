@@ -17,8 +17,6 @@ namespace FoxEEEControl
         private Thread SearchThread;
         private MasterHandler masterHandler;
 
-        private bool textChangedAuto = false;
-
         public frmMain()
         {
             InitializeComponent();
@@ -85,7 +83,7 @@ namespace FoxEEEControl
                         this.Hide();
                         try
                         {
-                            masterHandler.Start((HandlerItem)lbResults.SelectedItem);
+                            masterHandler.Start((HandlerItem)lbResults.SelectedItem, tbEntry.Text);
                         }
                         catch
                         {
@@ -96,13 +94,15 @@ namespace FoxEEEControl
                         if (lbResults.Items.Count < 1) break;
                         if (lbResults.SelectedIndex >= lbResults.Items.Count - 1) lbResults.SelectedIndex = 0;
                         else lbResults.SelectedIndex++;
-                        tbEntry_SetText();
+                        tbDisplay_SetText();
+                        SaveSelectedItem();
                         break;
                     case Keys.Up:
                         if (lbResults.Items.Count < 1) break;
                         if (lbResults.SelectedIndex < 1) lbResults.SelectedIndex = lbResults.Items.Count - 1;
                         else lbResults.SelectedIndex--;
-                        tbEntry_SetText();
+                        tbDisplay_SetText();
+                        SaveSelectedItem();
                         break;
                     default:
                         e.Handled = false;
@@ -111,20 +111,10 @@ namespace FoxEEEControl
             }
             catch { }
         }
-        
-        private void tbEntry_SetText()
-        {
-            textChangedAuto = true;
-            HandlerItem item = (HandlerItem)lbResults.SelectedItem;
-            string text = item.handler.GetTextForItem(item.text);
-            if(!string.IsNullOrEmpty(text)) tbEntry.Text = text;
-            textChangedAuto = false;
-            tbEntry.Select(tbEntry.Text.Length, 0);
-        }
 
         private void tbEntry_TextChanged(object sender, EventArgs e)
         {
-            if (textChangedAuto) return;
+            tbDisplay_SetText();
             try
             {
                 SearchThread.Abort();
@@ -134,14 +124,14 @@ namespace FoxEEEControl
             SearchThread.Start();
         }
 
+        private HandlerItem selItem;
+        private void SaveSelectedItem()
+        {
+            selItem = (HandlerItem)lbResults.SelectedItem;
+        }
         private void SearchStuff()
         {
-            HandlerItem selItem = null;
             string txt = tbEntry.Text;
-            lbResults.Invoke(new MethodInvoker(delegate()
-            {
-                selItem = (HandlerItem)lbResults.SelectedItem;
-            }));
             lbResults.Invoke(new MethodInvoker(lbResults.Items.Clear));
             if (txt == "") return;
 
@@ -150,19 +140,51 @@ namespace FoxEEEControl
             lbResults.Invoke(new MethodInvoker(delegate()
             {
                 lbResults.Items.AddRange(items);
-                if (selItem != null && lbResults.Items.Count > 0)
+            }));
+            if (selItem != null && lbResults.Items.Count > 0)
+            {
+                for (int i = 0; i < lbResults.Items.Count; i++)
                 {
-                    for (int i = 0; i < lbResults.Items.Count; i++)
+                    HandlerItem item = (HandlerItem)lbResults.Items[i];
+                    if (item.Equals(selItem))
                     {
-                        HandlerItem item = (HandlerItem)lbResults.Items[i];
-                        if (item.Equals(selItem))
+                        lbResults.Invoke(new MethodInvoker(delegate()
                         {
                             lbResults.SelectedIndex = i;
-                            break;
-                        }
+                            tbDisplay_SetText();
+                        }));
+                        break;
                     }
                 }
-            }));
+            }
+        }
+
+        private void __tbDisplay_SetEntryText()
+        {
+            tbDisplay.Text = (string)tbEntry.Text.Clone();
+            tbDisplay.SelectAll();
+            tbDisplay.SelectionBackColor = Color.Transparent;
+            tbDisplay.SelectionColor = Color.Black;
+        }
+
+        private void tbDisplay_SetText()
+        {
+            string str = tbEntry.Text.ToLower();
+
+            if (lbResults.SelectedItem == null) { __tbDisplay_SetEntryText(); return; }
+
+            HandlerItem item = (HandlerItem)lbResults.SelectedItem;
+            tbDisplay.Text = item.handler.GetTextForItem(item.text);
+            if (string.IsNullOrWhiteSpace(tbDisplay.Text) || tbDisplay.Text.ToLower().IndexOf(str) < 0) { __tbDisplay_SetEntryText(); return; }
+
+            int index = tbDisplay.Text.ToLower().IndexOf(tbEntry.Text.ToLower());
+            if (index < 0) { __tbDisplay_SetEntryText(); return; }
+
+            tbDisplay.SelectAll();
+            tbDisplay.SelectionBackColor = Color.Transparent;
+            tbDisplay.SelectionColor = Color.Black;
+            tbDisplay.Select(index, tbEntry.Text.Length);
+            tbDisplay.SelectionBackColor = Color.Gray;
         }
 
         private void frmMain_Move(object sender, EventArgs e)
@@ -215,6 +237,11 @@ namespace FoxEEEControl
             tbEntry.Enabled = true;
             lbResults.Enabled = true;
             tbEntry.Focus();
+        }
+
+        private void tmRefresh_Tick(object sender, EventArgs e)
+        {
+            tbDisplay_SetText();
         }
     }
 }

@@ -20,7 +20,8 @@ namespace FoxEEEControl.Handlers
 
         public override bool Equals(object obj)
         {
-            return text.Equals(obj);
+            if(!(obj is HandlerItem)) return false;
+            return text.Equals(((HandlerItem)obj).text);
         }
 
         public override int GetHashCode()

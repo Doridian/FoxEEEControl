@@ -72,8 +72,13 @@ namespace FoxEEEControl.Handlers
             return ret.ToArray();
         }
 
-        public void Start(HandlerItem item)
+        public void Start(HandlerItem item, string curtxt)
         {
+            if (item == null)
+            {
+                TryStart(curtxt);
+                return;
+            }
             try
             {
                 item.handler.Start(item.text);

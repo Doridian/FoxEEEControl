@@ -120,15 +120,16 @@
             // 
             this.tbDisplay.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbDisplay.DetectUrls = false;
+            this.tbDisplay.HideSelection = false;
             this.tbDisplay.Location = new System.Drawing.Point(12, 12);
             this.tbDisplay.Multiline = false;
             this.tbDisplay.Name = "tbDisplay";
-            this.tbDisplay.ReadOnly = true;
             this.tbDisplay.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.None;
             this.tbDisplay.Size = new System.Drawing.Size(256, 20);
             this.tbDisplay.TabIndex = 2;
             this.tbDisplay.TabStop = false;
             this.tbDisplay.Text = "";
+            this.tbDisplay.WordWrap = false;
             // 
             // tmRefresh
             // 

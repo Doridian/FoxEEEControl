@@ -165,6 +165,10 @@ namespace FoxEEEControl
             tbDisplay.SelectAll();
             tbDisplay.SelectionBackColor = Color.Transparent;
             tbDisplay.SelectionColor = Color.Black;
+            tbDisplay.Select(tbEntry.SelectionStart, tbEntry.SelectionLength);
+
+            tbDisplay.Select(0, 0);
+            tbEntry.Select(tbEntry.Text.Length, 1);
         }
 
         private void tbDisplay_SetText()
@@ -184,7 +188,10 @@ namespace FoxEEEControl
             tbDisplay.SelectionBackColor = Color.Transparent;
             tbDisplay.SelectionColor = Color.Black;
             tbDisplay.Select(index, tbEntry.Text.Length);
-            tbDisplay.SelectionBackColor = Color.Gray;
+            tbDisplay.SelectionBackColor = Color.Pink;
+
+            tbDisplay.Select(0, 0);
+            tbEntry.Select(tbEntry.Text.Length, 1);
         }
 
         private void frmMain_Move(object sender, EventArgs e)

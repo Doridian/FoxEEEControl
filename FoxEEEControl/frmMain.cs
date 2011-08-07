@@ -141,21 +141,31 @@ namespace FoxEEEControl
             {
                 lbResults.Items.AddRange(items);
             }));
-            if (selItem != null && lbResults.Items.Count > 0)
+            if (lbResults.Items.Count > 0)
             {
-                for (int i = 0; i < lbResults.Items.Count; i++)
+                if (selItem != null)
                 {
-                    HandlerItem item = (HandlerItem)lbResults.Items[i];
-                    if (item.Equals(selItem))
+                    for (int i = 0; i < lbResults.Items.Count; i++)
                     {
-                        lbResults.Invoke(new MethodInvoker(delegate()
+                        HandlerItem item = (HandlerItem)lbResults.Items[i];
+                        if (item.Equals(selItem))
                         {
-                            lbResults.SelectedIndex = i;
-                            tbDisplay_SetText();
-                        }));
-                        break;
+                            lbResults.Invoke(new MethodInvoker(delegate()
+                            {
+                                lbResults.SelectedIndex = i;
+                                tbDisplay_SetText();
+                            }));
+                            return;
+                        }
                     }
                 }
+
+                lbResults.Invoke(new MethodInvoker(delegate()
+                {
+                    lbResults.SelectedIndex = 0;
+                    tbDisplay_SetText();
+                    SaveSelectedItem();
+                }));
             }
         }
 
